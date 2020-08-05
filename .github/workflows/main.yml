@@ -1,10 +1,14 @@
 name: Run Examples
 
 on:
- push:
-   branches: [ master ]
- pull_request:
-   branches: [ master ]
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    # Every day at midnight  
+    - cron: '0/10 * * * *'
+        
 
 jobs:
   test:
@@ -26,6 +30,15 @@ jobs:
         # pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cu102/torch_nightly.html
     - name: Run Tests
       run: |
-        ./run_python_examples.sh "install_deps,run_all,clean"
+        #./run_python_examples.sh "install_deps,run_all,clean"
+        echo hello world
+    - name: Open issue on failure
+      uses: rishabhgupta/git-action-issue@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: CI failed
+        body:  ${{ github.event_name }} CI failed, please check why
+        assignee: ''
+      if: (${{ github.event_name }} == 'schedule')
 
 
